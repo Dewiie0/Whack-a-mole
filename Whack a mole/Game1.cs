@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Whack_a_mole
 {
@@ -20,14 +21,27 @@ namespace Whack_a_mole
         Hole hole;
 
         //Positions
-
         int posX;
         int posY;
 
         //Arrays
         Mole[,] moleArray;
-        Hole[,] holeArray;
-        Foreground[,] foregroundArray;
+
+        // Random
+        Random random = new Random();
+
+        //Timer
+        MouseState mState;
+
+        //bools
+        bool mRelease = true;
+        public bool moveTheMole = false;
+
+        //timer asset
+        double timer = 0;
+        double resetTimer = 1;
+
+        GameState gameState=GameState.play;
 
         public Game1()
         {
@@ -50,8 +64,7 @@ namespace Whack_a_mole
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             moleArray = new Mole[3,3];
-            holeArray = new Hole[3, 3];
-            foregroundArray = new Foreground[3, 3];
+
 
 
             moleTex = Content.Load<Texture2D>("mole");
@@ -62,34 +75,13 @@ namespace Whack_a_mole
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    posX = j * 200+105;
-                    posY = i * 240+125;
+                    posX = j * 200+110;
+                    posY = i * 220+250;
 
-                    moleArray[i,j] = new Mole(moleTex,posX,posY);
+                    moleArray[i,j] = new Mole(moleTex,holeTex,foreTex,posX,posY);
                 }
             }
 
-            for (int l = 0; l < 3; l++)
-            {
-                for (int o = 0; o < 3; o++)
-                {
-                    posX = o * 200 + 105;
-                    posY = l * 240+150;
-
-                    holeArray[l, o] = new Hole(holeTex, posX, posY);
-                }
-            }
-
-            for (int f = 0; f < 3; f++)
-            {
-                for (int g = 0; g < 3; g++)
-                {
-                    posX = g * 200 + 105;
-                    posY = f * 240 + 150;
-
-                    foregroundArray[f,g]=new Foreground(foreTex,posX, posY);
-                }
-            }
 
             // TODO: use this.Content to load your game content here
         }
@@ -98,6 +90,15 @@ namespace Whack_a_mole
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            mState = Mouse.GetState();
+            timer += gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (gameState == GameState.play)
+            {
+                playStateUpdate(gameTime);
+            }
+
 
             // TODO: Add your update logic here
 
@@ -108,13 +109,28 @@ namespace Whack_a_mole
         {
             GraphicsDevice.Clear(Color.LimeGreen);
             _spriteBatch.Begin();
-            for (int l = 0; l < holeArray.GetLength(0); l++)
+            if (gameState == GameState.play)
             {
-                for (int o = 0; o < holeArray.GetLength(1); o++)
-                {
-                    holeArray[l, o].Draw(_spriteBatch);
-                }
+                drawPlayState();
+
             }
+            _spriteBatch.End();
+
+            // TODO: Add your drawing code here
+
+            base.Draw(gameTime);
+        }
+
+        //enum
+        enum GameState
+        {
+            start,
+            play,
+            gameOver,
+        }
+        public void drawPlayState()
+        {
+
             for (int i = 0; i < moleArray.GetLength(0); i++)
             {
                 for (int j = 0; j < moleArray.GetLength(1); j++)
@@ -122,20 +138,40 @@ namespace Whack_a_mole
                     moleArray[i, j].Draw(_spriteBatch);
                 }
             }
-            for (int f = 0; f < foregroundArray.GetLength(0); f++)
+            
+
+        }
+        public void playStateUpdate(GameTime gameTime)
+        {
+            if (timer >= resetTimer)
             {
-                for (int g = 0; g < foregroundArray.GetLength(1); g++)
-                {
-                    foregroundArray[f, g].Draw(_spriteBatch);
-                }
+                timer = 0;
+                mole.moveUpAct(true);
+                
             }
 
 
-            _spriteBatch.End();
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    moleArray[i, j].Update();
 
-            // TODO: Add your drawing code here
+                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y))
+                    {
+                        mRelease = false;
+                    }
 
-            base.Draw(gameTime);
+                    if (mState.LeftButton == ButtonState.Released)
+                    {
+                        mRelease = true;
+                    }
+
+                }
+            }
+
         }
+
+
     }
 }
