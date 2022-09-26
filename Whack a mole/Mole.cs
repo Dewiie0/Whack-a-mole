@@ -18,10 +18,14 @@ namespace Whack_a_mole
 
         int posX;
         int posY;
-        bool moveActive;
+        bool moveUpActive=false;
+        bool molehit=false;
+        double timer = 0;
+        double timerReset = 1;
 
-        Vector2 pos;
+        public Vector2 pos;
         public Vector2 molePos;
+        public Vector2 velocity;
         public Rectangle moleRect;
 
         public Mole(Texture2D moleTex, Texture2D holeTex, Texture2D foreTex,int posX,int posY)
@@ -33,21 +37,44 @@ namespace Whack_a_mole
             this.posY = posY;
             this.pos = new Vector2(posX, posY);
             this.molePos = new Vector2(posX, posY);
-            moleRect = new Rectangle(posX,posY, moleTex.Width, moleTex.Height);
 
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
-            moleRect.X = posX;
-            moleRect.Y = posY;
-
-            if (moveActive && molePos.Y < pos.Y - 50)
+            moleRect = new Rectangle((int)molePos.X,(int)molePos.Y, moleTex.Width, moleTex.Height);
+            molePos += velocity;
+            
+            if (moveUpActive)
             {
-                moleRect.Y -= 4;
+                velocity = new Vector2(0,-3);
+
             }
-            
-            
+
+            if (molePos.Y <= posY-160)
+            {
+                velocity = new Vector2(0, 0);
+                moveUpActive = false;
+
+                timer += gameTime.ElapsedGameTime.TotalSeconds;
+                if (timer >= timerReset)
+                {
+                    velocity = new Vector2(0, 3);
+                    timer= 0;
+                }
+            }
+
+            if(molePos.Y > posY)
+            {
+                velocity = new Vector2(0, 0);
+            }
+
+            if (molehit)
+            {
+                velocity = new Vector2(0, 3);
+            }
+
+
         }
 
 
@@ -60,8 +87,13 @@ namespace Whack_a_mole
 
         public void moveUpAct(bool moveTheMole)
         {
-            moveActive = moveTheMole;
+            moveUpActive = moveTheMole;
         }
+        public void gotHit(bool hit)
+        {
+            molehit = hit;
+        }
+
 
     }
 }

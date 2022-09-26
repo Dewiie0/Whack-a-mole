@@ -15,10 +15,13 @@ namespace Whack_a_mole
         Texture2D foreTex;
         Texture2D backGround;
         Texture2D moleTex;
+        Texture2D moleKOTex;
+
+        //Font
+        SpriteFont spriteFont;
 
         //Classes
         Mole mole;
-        Hole hole;
 
         //Positions
         int posX;
@@ -35,11 +38,15 @@ namespace Whack_a_mole
 
         //bools
         bool mRelease = true;
-        public bool moveTheMole = false;
 
         //timer asset
         double timer = 0;
-        double resetTimer = 1;
+        double resetTimer = 2;
+
+        //gamecount
+        int score = 0;
+        int lives = 5;
+
 
         GameState gameState=GameState.play;
 
@@ -70,6 +77,8 @@ namespace Whack_a_mole
             moleTex = Content.Load<Texture2D>("mole");
             holeTex = Content.Load<Texture2D>("hole (1)");
             foreTex = Content.Load<Texture2D>("hole_foreground");
+            moleKOTex = Content.Load<Texture2D>("mole_KO (1)");
+            spriteFont = Content.Load<SpriteFont>("galleryFont");
 
             for (int i = 0; i < 3; i++)
             {
@@ -92,14 +101,21 @@ namespace Whack_a_mole
                 Exit();
 
             mState = Mouse.GetState();
-            timer += gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (gameState == GameState.start)
+            {
+                startStateUpdate();
+            }
 
             if (gameState == GameState.play)
             {
                 playStateUpdate(gameTime);
             }
 
-
+            if (gameState == GameState.gameOver)
+            {
+                gameoverStateUpdate();
+            }
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -138,16 +154,29 @@ namespace Whack_a_mole
                     moleArray[i, j].Draw(_spriteBatch);
                 }
             }
-            
+            _spriteBatch.DrawString(spriteFont, "Score: "+ score.ToString(), new Vector2(0, 0), Color.White);
+
+        }
+        public void drawStartState()
+        {
+
+        }
+        public void drawGameoverState()
+        {
 
         }
         public void playStateUpdate(GameTime gameTime)
         {
+            timer += gameTime.ElapsedGameTime.TotalSeconds;
+
             if (timer >= resetTimer)
             {
+                Random rand = new Random();
+                int x = rand.Next(0, 3);
+                int y = rand.Next(0, 3);
+                moleArray[y, x].moveUpAct(true);
                 timer = 0;
-                mole.moveUpAct(true);
-                
+
             }
 
 
@@ -155,11 +184,13 @@ namespace Whack_a_mole
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    moleArray[i, j].Update();
+                    moleArray[i, j].Update(gameTime);
 
-                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y))
+                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i,j].pos.Y-100)
                     {
                         mRelease = false;
+                        score++;
+                        moleArray[i, j].gotHit(true);
                     }
 
                     if (mState.LeftButton == ButtonState.Released)
@@ -167,8 +198,18 @@ namespace Whack_a_mole
                         mRelease = true;
                     }
 
+
+
                 }
             }
+
+        }
+        public void startStateUpdate()
+        {
+
+        }
+        public void gameoverStateUpdate()
+        {
 
         }
 
