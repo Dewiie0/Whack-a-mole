@@ -18,15 +18,18 @@ namespace Whack_a_mole
 
         int posX;
         int posY;
+        int velocityY;
         bool moveUpActive=false;
         bool molehit=false;
-        double timer = 0;
-        double timerReset = 1;
+        public double timer = 0;
+        double timerReset;
 
         public Vector2 pos;
         public Vector2 molePos;
         public Vector2 velocity;
         public Rectangle moleRect;
+
+        Random random = new Random();
 
         public Mole(Texture2D moleTex, Texture2D holeTex, Texture2D foreTex,int posX,int posY)
         {
@@ -44,11 +47,14 @@ namespace Whack_a_mole
         {
             moleRect = new Rectangle((int)molePos.X,(int)molePos.Y, moleTex.Width, moleTex.Height);
             molePos += velocity;
+            timerReset = random.Next(2, 4);
             
             if (moveUpActive)
             {
-                velocity = new Vector2(0,-3);
+                random = new Random();
 
+                velocityY = random.Next(-10, -4);
+                velocity = new Vector2(0,velocityY);
             }
 
             if (molePos.Y <= posY-160)
@@ -63,6 +69,8 @@ namespace Whack_a_mole
                     timer= 0;
                 }
             }
+            
+            
 
             if(molePos.Y > posY)
             {

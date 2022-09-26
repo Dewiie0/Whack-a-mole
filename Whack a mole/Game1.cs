@@ -41,14 +41,15 @@ namespace Whack_a_mole
 
         //timer asset
         double timer = 0;
-        double resetTimer = 2;
+        double resetTimer = 1;
 
         //gamecount
         int score = 0;
-        int lives = 5;
+        int lives = 3;
 
 
         GameState gameState=GameState.play;
+        LevelState levelState=LevelState.level1;
 
         public Game1()
         {
@@ -56,7 +57,7 @@ namespace Whack_a_mole
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _graphics.PreferredBackBufferHeight = 800;
-            _graphics.PreferredBackBufferWidth = 800;
+            _graphics.PreferredBackBufferWidth = 650;
         }
 
         protected override void Initialize()
@@ -79,13 +80,15 @@ namespace Whack_a_mole
             foreTex = Content.Load<Texture2D>("hole_foreground");
             moleKOTex = Content.Load<Texture2D>("mole_KO (1)");
             spriteFont = Content.Load<SpriteFont>("galleryFont");
+            backGround = Content.Load<Texture2D>("background (1)");
 
+            
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    posX = j * 200+110;
-                    posY = i * 220+250;
+                    posX = j * 165+65;
+                    posY = i * 165+250;
 
                     moleArray[i,j] = new Mole(moleTex,holeTex,foreTex,posX,posY);
                 }
@@ -110,6 +113,18 @@ namespace Whack_a_mole
             if (gameState == GameState.play)
             {
                 playStateUpdate(gameTime);
+                if (levelState==LevelState.level1)
+                {
+                    resetTimer = 1;
+                }
+                if (levelState == LevelState.level2)
+                {
+                    resetTimer = 0.5;
+                }
+                if (levelState == LevelState.level3)
+                {
+                    resetTimer = 0.3;
+                }
             }
 
             if (gameState == GameState.gameOver)
@@ -123,8 +138,9 @@ namespace Whack_a_mole
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.LimeGreen);
+            GraphicsDevice.Clear(new Color(111,209,72));
             _spriteBatch.Begin();
+            _spriteBatch.Draw(backGround, new Vector2(0,0), Color.White);
             if (gameState == GameState.play)
             {
                 drawPlayState();
@@ -138,6 +154,13 @@ namespace Whack_a_mole
         }
 
         //enum
+
+        enum LevelState
+        {
+            level1,
+            level2,
+            level3,
+        }
         enum GameState
         {
             start,
@@ -155,7 +178,7 @@ namespace Whack_a_mole
                 }
             }
             _spriteBatch.DrawString(spriteFont, "Score: "+ score.ToString(), new Vector2(0, 0), Color.White);
-
+            _spriteBatch.DrawString(spriteFont, "Lives: " + lives.ToString(), new Vector2(540, 0), Color.White);
         }
         public void drawStartState()
         {
@@ -179,17 +202,17 @@ namespace Whack_a_mole
 
             }
 
-
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
+
                     moleArray[i, j].Update(gameTime);
 
-                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i,j].pos.Y-100)
+                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i, j].pos.Y - 100)
                     {
                         mRelease = false;
-                        score++;
+                        score+=10;
                         moleArray[i, j].gotHit(true);
                     }
 
@@ -198,8 +221,15 @@ namespace Whack_a_mole
                         mRelease = true;
                     }
 
+                    if (score>=30&&score<50)
+                    {
+                        levelState = LevelState.level2;
+                    }
 
-
+                    if (score >=50)
+                    {
+                        levelState=LevelState.level3;
+                    }
                 }
             }
 
