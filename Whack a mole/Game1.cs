@@ -53,7 +53,7 @@ namespace Whack_a_mole
         int frame;
         double frameTimer = 100;
         double frameInterval = 100;
-        double gameTimer = 30;
+        double gameTimer = 120;
         
 
         //gamecount
@@ -225,7 +225,7 @@ namespace Whack_a_mole
         public void drawGameoverState()
         {
             _spriteBatch.Draw(backGround, new Vector2(0, 0), Color.White);
-            _spriteBatch.DrawString(spriteFont, "The time have run out !", new Vector2(170, 400), Color.White);
+            _spriteBatch.DrawString(spriteFont, "Game Over !", new Vector2(240, 400), Color.White);
             _spriteBatch.DrawString(spriteFont, "Yours score was: "+score.ToString(), new Vector2(180, 450), Color.White);
         }
         public void playStateUpdate(GameTime gameTime)
