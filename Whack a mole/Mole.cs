@@ -69,22 +69,18 @@ namespace Whack_a_mole
                     timer= 0;
                 }
             }
-            
-            
-
-            if(molePos.Y > posY)
-            {
-                velocity = new Vector2(0, 0);
-            }
 
             if (molehit)
             {
                 velocity = new Vector2(0, 3);
             }
 
-
+            if (molePos.Y >= posY&&velocity==new Vector2(0,3))
+            {
+                velocity = new Vector2(0, 0);
+                molehit = false;
+            }
         }
-
 
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -101,7 +97,5 @@ namespace Whack_a_mole
         {
             molehit = hit;
         }
-
-
     }
 }
