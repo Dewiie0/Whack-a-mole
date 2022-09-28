@@ -21,7 +21,7 @@ namespace Whack_a_mole
         int posY;
         int velocityY;
         bool moveUpActive=false;
-        bool molehit=false;
+        public bool molehit=false;
         public double timer = 0;
         double timerReset;
         public bool lostLife = false;

@@ -17,6 +17,7 @@ namespace Whack_a_mole
         Texture2D moleTex;
         Texture2D moleKOTex;
         Texture2D spriteSheet;
+        Texture2D crosshair;
 
         //rect
         Rectangle sheetRect;
@@ -51,7 +52,12 @@ namespace Whack_a_mole
         double frameTimer = 100;
         double frameInterval = 100;
         double gameTimer = 120;
-        
+
+        //rotation count
+        float elapsed;
+        float rotationAngle;
+        float circle;
+        Vector2 origin;
 
         //gamecount
         int score = 0;
@@ -92,13 +98,17 @@ namespace Whack_a_mole
             spriteFont = Content.Load<SpriteFont>("galleryFont");
             backGround = Content.Load<Texture2D>("background (1)");
             spriteSheet = Content.Load<Texture2D>("spritesheet_stone");
+            crosshair = Content.Load<Texture2D>("mallet");
 
             stonePos = new Vector2(125, -60);
-
             velocity = new Vector2(0, 2);
 
-
             sheetRect = new Rectangle(0,0, 60, 60);
+
+            origin.X = crosshair.Width / 2 + 40;
+            origin.Y = crosshair.Height / 2;
+            rotationAngle = 0;
+            circle = MathHelper.Pi * 2;
             
             for (int i = 0; i < 3; i++)
             {
@@ -110,7 +120,6 @@ namespace Whack_a_mole
                     moleArray[i,j] = new Mole(moleTex,holeTex,foreTex,moleKOTex,posX,posY);
                 }
             }
-
 
             // TODO: use this.Content to load your game content here
         }
@@ -146,6 +155,10 @@ namespace Whack_a_mole
                     resetTimer = 0.5;
      
                 }
+            }
+            if (gameState == GameState.gameOver)
+            {
+                IsMouseVisible = true;
             }
             // TODO: Add your update logic here
 
@@ -204,6 +217,8 @@ namespace Whack_a_mole
             _spriteBatch.DrawString(spriteFont, "Score: "+ score.ToString(), new Vector2(0, 0), Color.White);
             _spriteBatch.DrawString(spriteFont, "Lives: " + lives.ToString(), new Vector2(540, 0), Color.White);
             _spriteBatch.DrawString(spriteFont, ((int)gameTimer).ToString(), new Vector2(315, 0), Color.White);
+            _spriteBatch.Draw(crosshair,new Vector2(mState.X+130,mState.Y),null, Color.White,rotationAngle,origin,1.0f,SpriteEffects.None,0f);
+
         }
         public void drawStartState()
         {
@@ -229,6 +244,10 @@ namespace Whack_a_mole
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
             gameTimer -= gameTime.ElapsedGameTime.TotalSeconds;
+            rotationAngle = 0;
+            rotationAngle = rotationAngle % circle;
+            IsMouseVisible = false;
+
 
             if (timer >= resetTimer)
             {
@@ -253,11 +272,21 @@ namespace Whack_a_mole
 
                     moleArray[i, j].Update(gameTime);
 
-                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i, j].pos.Y - 50)
+                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i, j].pos.Y - 50 && moleArray[i,j].molehit==false)
                     {
                         mRelease = false;
                         score+=10;
                         moleArray[i, j].gotHit(true);
+                    }
+
+                    if(mState.LeftButton == ButtonState.Pressed)
+                    {
+                        elapsed = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                        rotationAngle -= elapsed;
+                        if(rotationAngle >=30)
+                        {
+                            rotationAngle = 0;
+                        }
                     }
 
                     if (mState.LeftButton == ButtonState.Released)
