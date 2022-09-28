@@ -25,6 +25,7 @@ namespace Whack_a_mole
         public double timer = 0;
         double timerReset;
         public bool lostLife = false;
+        bool superMoleSpawn = false;
 
         public Vector2 pos;
         public Vector2 molePos;

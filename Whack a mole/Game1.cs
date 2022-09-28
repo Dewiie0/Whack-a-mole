@@ -24,9 +24,6 @@ namespace Whack_a_mole
         //Font
         SpriteFont spriteFont;
 
-        //Classes
-        Mole mole;
-
         //Positions
         int posX;
         int posY;
@@ -80,7 +77,6 @@ namespace Whack_a_mole
 
             base.Initialize();
         }
-
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -118,7 +114,6 @@ namespace Whack_a_mole
 
             // TODO: use this.Content to load your game content here
         }
-
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -156,7 +151,6 @@ namespace Whack_a_mole
 
             base.Update(gameTime);
         }
-
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(new Color(111,209,72));
@@ -183,7 +177,6 @@ namespace Whack_a_mole
         }
 
         //enum
-
         enum LevelState
         {
             level1,
@@ -196,6 +189,8 @@ namespace Whack_a_mole
             play,
             gameOver,
         }
+
+        //Draw
         public void drawPlayState()
         {
             _spriteBatch.Draw(backGround, new Vector2(0, 0), Color.White);
@@ -228,6 +223,8 @@ namespace Whack_a_mole
             _spriteBatch.DrawString(spriteFont, "Game Over !", new Vector2(240, 400), Color.White);
             _spriteBatch.DrawString(spriteFont, "Yours score was: "+score.ToString(), new Vector2(180, 450), Color.White);
         }
+
+        //Update
         public void playStateUpdate(GameTime gameTime)
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
@@ -248,7 +245,6 @@ namespace Whack_a_mole
                 gameState = GameState.gameOver;
 
             }
-
 
             for (int i = 0; i < 3; i++)
             {
