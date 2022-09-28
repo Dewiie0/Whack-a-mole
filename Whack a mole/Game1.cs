@@ -53,7 +53,7 @@ namespace Whack_a_mole
         int frame;
         double frameTimer = 100;
         double frameInterval = 100;
-        int gameTimer = 30;
+        double gameTimer = 30;
         
 
         //gamecount
@@ -111,7 +111,7 @@ namespace Whack_a_mole
                     posX = j * 165+65;
                     posY = i * 165+250;
 
-                    moleArray[i,j] = new Mole(moleTex,holeTex,foreTex,posX,posY);
+                    moleArray[i,j] = new Mole(moleTex,holeTex,foreTex,moleKOTex,posX,posY);
                 }
             }
 
@@ -208,7 +208,7 @@ namespace Whack_a_mole
             }
             _spriteBatch.DrawString(spriteFont, "Score: "+ score.ToString(), new Vector2(0, 0), Color.White);
             _spriteBatch.DrawString(spriteFont, "Lives: " + lives.ToString(), new Vector2(540, 0), Color.White);
-            _spriteBatch.DrawString(spriteFont, gameTimer.ToString(), new Vector2(315, 0), Color.White);
+            _spriteBatch.DrawString(spriteFont, ((int)gameTimer).ToString(), new Vector2(315, 0), Color.White);
         }
         public void drawStartState()
         {
@@ -231,7 +231,7 @@ namespace Whack_a_mole
         public void playStateUpdate(GameTime gameTime)
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
-            gameTimer -= (int)gameTime.ElapsedGameTime.TotalSeconds;
+            gameTimer -= gameTime.ElapsedGameTime.TotalSeconds;
 
             if (timer >= resetTimer)
             {
@@ -257,23 +257,22 @@ namespace Whack_a_mole
 
                     moleArray[i, j].Update(gameTime);
 
-                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i, j].pos.Y - 100)
+                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i, j].pos.Y - 50)
                     {
                         mRelease = false;
                         score+=10;
                         moleArray[i, j].gotHit(true);
                     }
 
-                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && !moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i, j].pos.Y - 100)
-                    {
-                        lives--;
-                        mRelease = false;
-                    }
-
-
                     if (mState.LeftButton == ButtonState.Released)
                     {
                         mRelease = true;
+                    }
+
+                    if (moleArray[i,j].lostLife==true)
+                    {
+                        lives--;
+                        moleArray[i,j].lostLife=false;
                     }
 
                     if (score>=100&&score<200)
