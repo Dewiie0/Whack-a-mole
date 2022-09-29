@@ -19,7 +19,7 @@ namespace Whack_a_mole
         Texture2D spriteSheet;
         Texture2D crosshair;
 
-        //rect
+        //Rect
         Rectangle sheetRect;
 
         //Font
@@ -44,6 +44,8 @@ namespace Whack_a_mole
         //bools
         bool mRelease = true;
         bool playText = false;
+        bool isRotate = false;
+        bool isRotateBack;
 
         //timer asset
         double timer = 0;
@@ -54,8 +56,7 @@ namespace Whack_a_mole
         double gameTimer = 120;
 
         //rotation count
-        float elapsed;
-        float rotationAngle;
+        double rotationAngle;
         float circle;
         Vector2 origin;
 
@@ -63,6 +64,7 @@ namespace Whack_a_mole
         int score = 0;
         int lives = 5;
         int round = 0;
+        int chance;
 
 
         GameState gameState=GameState.start;
@@ -217,7 +219,7 @@ namespace Whack_a_mole
             _spriteBatch.DrawString(spriteFont, "Score: "+ score.ToString(), new Vector2(0, 0), Color.White);
             _spriteBatch.DrawString(spriteFont, "Lives: " + lives.ToString(), new Vector2(540, 0), Color.White);
             _spriteBatch.DrawString(spriteFont, ((int)gameTimer).ToString(), new Vector2(315, 0), Color.White);
-            _spriteBatch.Draw(crosshair,new Vector2(mState.X+130,mState.Y),null, Color.White,rotationAngle,origin,1.0f,SpriteEffects.None,0f);
+            _spriteBatch.Draw(crosshair,new Vector2(mState.X+130,mState.Y),null, Color.White,(float)rotationAngle,origin,1.0f,SpriteEffects.None,0f);
 
         }
         public void drawStartState()
@@ -244,7 +246,6 @@ namespace Whack_a_mole
         {
             timer += gameTime.ElapsedGameTime.TotalSeconds;
             gameTimer -= gameTime.ElapsedGameTime.TotalSeconds;
-            rotationAngle = 0;
             rotationAngle = rotationAngle % circle;
             IsMouseVisible = false;
 
@@ -272,21 +273,11 @@ namespace Whack_a_mole
 
                     moleArray[i, j].Update(gameTime);
 
-                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i, j].pos.Y - 50 && moleArray[i,j].molehit==false)
+                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i, j].pos.Y - 60 && moleArray[i,j].molehit==false)
                     {
                         mRelease = false;
                         score+=10;
                         moleArray[i, j].gotHit(true);
-                    }
-
-                    if(mState.LeftButton == ButtonState.Pressed)
-                    {
-                        elapsed = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-                        rotationAngle -= elapsed;
-                        if(rotationAngle >=30)
-                        {
-                            rotationAngle = 0;
-                        }
                     }
 
                     if (mState.LeftButton == ButtonState.Released)
@@ -309,6 +300,9 @@ namespace Whack_a_mole
                     {
                         levelState=LevelState.level3;
                     }
+
+                    malletRotate(gameTime);
+                   
                 }
             }
 
@@ -345,6 +339,59 @@ namespace Whack_a_mole
             {
                 gameState = GameState.play;
                 playText = false;
+            }
+        }
+        public void malletRotate(GameTime gameTime)
+        {
+
+            if (mState.LeftButton == ButtonState.Pressed)
+            {
+                isRotate = true;
+            }
+
+
+            if (isRotate == true)
+            {
+                rotationAngle += gameTime.ElapsedGameTime.TotalSeconds;
+                System.Diagnostics.Debug.WriteLine(rotationAngle);
+                System.Diagnostics.Debug.WriteLine(gameTime.ElapsedGameTime.TotalSeconds);
+                if (rotationAngle >= 1)
+                {
+                    isRotateBack = true;
+                }
+
+            }
+
+            if (isRotateBack == true)
+            {
+                rotationAngle -= gameTime.ElapsedGameTime.TotalSeconds;
+                isRotate = false;
+
+                if (rotationAngle <= 0)
+                {
+                    isRotateBack = false;
+                }
+            }
+
+        }
+
+        public void RandomSuperMole()
+        {
+            Random random = new Random();
+            int chance = random.Next(1, 100);
+
+            if (chance == 1 &&chance< 60)
+            {
+
+            }
+            if(chance == 60 && chance < 90)
+            {
+
+            }
+
+            if (chance >= 90)
+            {
+
             }
         }
 
