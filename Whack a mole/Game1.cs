@@ -66,6 +66,7 @@ namespace Whack_a_mole
         int lives = 5;
         int round = 0;
         int streaks = 0;
+        int moleType = 0;
 
 
         GameState gameState=GameState.start;
@@ -120,8 +121,8 @@ namespace Whack_a_mole
                 {
                     posX = j * 165+65;
                     posY = i * 165+250;
-
                     moleArray[i,j] = new Mole(moleTex,holeTex,foreTex,moleKOTex,posX,posY);
+
                 }
             }
 
@@ -260,7 +261,6 @@ namespace Whack_a_mole
                 int x = rand.Next(0, 3);
                 int y = rand.Next(0, 3);
                 moleArray[y, x].moveUpAct(true);
-
             }
 
             if (gameTimer <= 0 || lives == 0)
@@ -279,9 +279,7 @@ namespace Whack_a_mole
                     if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i, j].pos.Y - 60 && moleArray[i,j].molehit==false)
                     {
                         mRelease = false;
-                        score+=10;
-                        moleArray[i, j].gotHit(true);
-                        streaks++;
+                        moleArray[i, j].moleHP--;
                     }
 
                     if (mState.LeftButton == ButtonState.Released)
@@ -315,8 +313,13 @@ namespace Whack_a_mole
                         levelState=LevelState.level3;
                     }
 
+                    if (moleArray[i, j].moleHP <= 0)
+                    {
+                        moleArray[i, j].gotHit(true);
+                        score += 10;
+                        streaks++;
+                    }                 
                     malletRotate(gameTime);
-                   
                 }
             }
 
@@ -428,7 +431,6 @@ namespace Whack_a_mole
 
             }
         }
-
 
     }
 }
