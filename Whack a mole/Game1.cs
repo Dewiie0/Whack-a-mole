@@ -18,6 +18,7 @@ namespace Whack_a_mole
         Texture2D moleKOTex;
         Texture2D spriteSheet;
         Texture2D crosshair;
+        Texture2D heartTex;
 
         //Rect
         Rectangle sheetRect;
@@ -64,7 +65,7 @@ namespace Whack_a_mole
         int score = 0;
         int lives = 5;
         int round = 0;
-        int chance;
+        int streaks = 0;
 
 
         GameState gameState=GameState.start;
@@ -101,6 +102,7 @@ namespace Whack_a_mole
             backGround = Content.Load<Texture2D>("background (1)");
             spriteSheet = Content.Load<Texture2D>("spritesheet_stone");
             crosshair = Content.Load<Texture2D>("mallet");
+            heartTex = Content.Load<Texture2D>("Heart");
 
             stonePos = new Vector2(125, -60);
             velocity = new Vector2(0, 2);
@@ -216,10 +218,11 @@ namespace Whack_a_mole
                     moleArray[i, j].Draw(_spriteBatch);
                 }
             }
-            _spriteBatch.DrawString(spriteFont, "Score: "+ score.ToString(), new Vector2(0, 0), Color.White);
-            _spriteBatch.DrawString(spriteFont, "Lives: " + lives.ToString(), new Vector2(540, 0), Color.White);
-            _spriteBatch.DrawString(spriteFont, ((int)gameTimer).ToString(), new Vector2(315, 0), Color.White);
+            _spriteBatch.DrawString(spriteFont, "Score: "+ score.ToString(), new Vector2(0, 0), Color.Yellow);
+            _spriteBatch.DrawString(spriteFont, ((int)gameTimer).ToString(), new Vector2(315, 0), Color.Yellow);
+            _spriteBatch.DrawString(spriteFont,streaks.ToString()+" /10",new Vector2(580,0), Color.Yellow);
             _spriteBatch.Draw(crosshair,new Vector2(mState.X+130,mState.Y),null, Color.White,(float)rotationAngle,origin,1.0f,SpriteEffects.None,0f);
+            drawHeart(lives);
 
         }
         public void drawStartState()
@@ -278,6 +281,7 @@ namespace Whack_a_mole
                         mRelease = false;
                         score+=10;
                         moleArray[i, j].gotHit(true);
+                        streaks++;
                     }
 
                     if (mState.LeftButton == ButtonState.Released)
@@ -288,7 +292,17 @@ namespace Whack_a_mole
                     if (moleArray[i,j].lostLife==true)
                     {
                         lives--;
+                        streaks=0;  
                         moleArray[i,j].lostLife=false;
+                    }
+
+                    if (streaks >= 10)
+                    {
+                        if (lives < 5)
+                        {
+                            lives++;
+                        }
+                        streaks = 0;
                     }
 
                     if (score>=100&&score<200)
@@ -372,24 +386,44 @@ namespace Whack_a_mole
                     isRotateBack = false;
                 }
             }
-
         }
-
-        public void RandomSuperMole()
+        public void drawHeart(int lives)
         {
-            Random random = new Random();
-            int chance = random.Next(1, 100);
-
-            if (chance == 1 &&chance< 60)
+            if (lives == 5)
             {
-
-            }
-            if(chance == 60 && chance < 90)
-            {
-
+                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(50, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(100, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(150, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(200, 60), Color.White);
             }
 
-            if (chance >= 90)
+            if (lives == 4)
+            {
+                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(50, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(100, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(150, 60), Color.White);
+            }
+
+            if (lives == 3)
+            {
+                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(50, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(100, 60), Color.White);
+            }
+
+            if (lives == 2)
+            {
+                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(50, 60), Color.White);
+            }
+
+            if (lives == 1)
+            {
+                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
+            }
+            if (lives == 0)
             {
 
             }
