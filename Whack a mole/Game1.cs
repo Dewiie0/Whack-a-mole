@@ -17,7 +17,7 @@ namespace Whack_a_mole
         Texture2D moleTex;
         Texture2D moleKOTex;
         Texture2D spriteSheet;
-        Texture2D crosshair;
+        Texture2D mallet;
         Texture2D heartTex;
 
         //Rect
@@ -66,10 +66,11 @@ namespace Whack_a_mole
         int lives = 5;
         int round = 0;
         int streaks = 0;
-        int moleType = 0;
+        int moleHP;
+        int moleType;
 
 
-        GameState gameState=GameState.start;
+        GameState gameState=GameState.play;
         LevelState levelState=LevelState.level1;
 
         public Game1()
@@ -102,7 +103,7 @@ namespace Whack_a_mole
             spriteFont = Content.Load<SpriteFont>("galleryFont");
             backGround = Content.Load<Texture2D>("background (1)");
             spriteSheet = Content.Load<Texture2D>("spritesheet_stone");
-            crosshair = Content.Load<Texture2D>("mallet");
+            mallet = Content.Load<Texture2D>("mallet");
             heartTex = Content.Load<Texture2D>("Heart");
 
             stonePos = new Vector2(125, -60);
@@ -110,21 +111,12 @@ namespace Whack_a_mole
 
             sheetRect = new Rectangle(0,0, 60, 60);
 
-            origin.X = crosshair.Width / 2 + 40;
-            origin.Y = crosshair.Height / 2;
+            origin.X = mallet.Width / 2 + 40;
+            origin.Y = mallet.Height / 2;
             rotationAngle = 0;
             circle = MathHelper.Pi * 2;
-            
-            for (int i = 0; i < 3; i++)
-            {
-                for (int j = 0; j < 3; j++)
-                {
-                    posX = j * 165+65;
-                    posY = i * 165+250;
-                    moleArray[i,j] = new Mole(moleTex,holeTex,foreTex,moleKOTex,posX,posY);
 
-                }
-            }
+            randomMole();
 
             // TODO: use this.Content to load your game content here
         }
@@ -147,12 +139,12 @@ namespace Whack_a_mole
 
                 if (levelState==LevelState.level1)
                 {
-                    resetTimer = 1;
+                    resetTimer = 2;
 
                 }
                 if (levelState == LevelState.level2)
                 {
-                    resetTimer = 0.75;
+                    resetTimer = 1;
  
                 }
                 if (levelState == LevelState.level3)
@@ -222,7 +214,7 @@ namespace Whack_a_mole
             _spriteBatch.DrawString(spriteFont, "Score: "+ score.ToString(), new Vector2(0, 0), Color.Yellow);
             _spriteBatch.DrawString(spriteFont, ((int)gameTimer).ToString(), new Vector2(315, 0), Color.Yellow);
             _spriteBatch.DrawString(spriteFont,streaks.ToString()+" /10",new Vector2(580,0), Color.Yellow);
-            _spriteBatch.Draw(crosshair,new Vector2(mState.X+130,mState.Y),null, Color.White,(float)rotationAngle,origin,1.0f,SpriteEffects.None,0f);
+            _spriteBatch.Draw(mallet,new Vector2(mState.X+130,mState.Y),null, Color.White,(float)rotationAngle,origin,1.0f,SpriteEffects.None,0f);
             drawHeart(lives);
 
         }
@@ -251,7 +243,7 @@ namespace Whack_a_mole
             timer += gameTime.ElapsedGameTime.TotalSeconds;
             gameTimer -= gameTime.ElapsedGameTime.TotalSeconds;
             rotationAngle = rotationAngle % circle;
-            IsMouseVisible = false;
+            IsMouseVisible = true;
 
 
             if (timer >= resetTimer)
@@ -273,13 +265,21 @@ namespace Whack_a_mole
             {
                 for (int j = 0; j < 3; j++)
                 {
-
+                  
                     moleArray[i, j].Update(gameTime);
 
                     if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i, j].pos.Y - 60 && moleArray[i,j].molehit==false)
                     {
                         mRelease = false;
-                        moleArray[i, j].moleHP--;
+                        moleArray[i,j].moleHP--;
+
+                        if (moleArray[i,j].moleHP == 0)
+                        {
+                            moleArray[i, j].gotHit(true);
+                            streaks++;
+                            score += 10;
+                        }
+
                     }
 
                     if (mState.LeftButton == ButtonState.Released)
@@ -313,13 +313,10 @@ namespace Whack_a_mole
                         levelState=LevelState.level3;
                     }
 
-                    if (moleArray[i, j].moleHP <= 0)
-                    {
-                        moleArray[i, j].gotHit(true);
-                        score += 10;
-                        streaks++;
-                    }                 
+
                     malletRotate(gameTime);
+                    resetHP(moleArray);
+
                 }
             }
 
@@ -370,8 +367,6 @@ namespace Whack_a_mole
             if (isRotate == true)
             {
                 rotationAngle += gameTime.ElapsedGameTime.TotalSeconds;
-                System.Diagnostics.Debug.WriteLine(rotationAngle);
-                System.Diagnostics.Debug.WriteLine(gameTime.ElapsedGameTime.TotalSeconds);
                 if (rotationAngle >= 1)
                 {
                     isRotateBack = true;
@@ -431,6 +426,74 @@ namespace Whack_a_mole
 
             }
         }
+        public void randomMole()
+        {
+            for (int i = 0; i < moleArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < moleArray.GetLength(1); j++)
+                {
+                    posX = j * 165 + 65;
+                    posY = i * 165 + 250;
+                    moleType = random.Next(0, 10);
+
+                    if (moleType >= 0&&moleType<=4)
+                    {
+                        moleHP = 1;
+                        moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY,Color.White,moleHP);
+                    }
+
+                    if (moleType >4&&moleType<=6)
+                    {
+                        moleHP = 2;
+                        moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY, Color.Red,moleHP);
+                    }
+
+                    if (moleType >6&&moleType<=8)
+                    {
+                        moleHP = 3;
+                        moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY, Color.Coral,moleHP);
+                    }
+
+                    if (moleType >8&&moleType<=10)
+                    {
+                        moleHP = 4;
+                        moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY, Color.HotPink,moleHP);
+                    }
+
+                }
+            }
+        }
+        internal void resetHP(Mole[,] moles)
+        {
+            for (int i = 0; i < moleArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < moleArray.GetLength(1); j++)
+                {
+
+                    if (moleArray[i, j].getColor()==Color.White)
+                    {
+                        moleArray[i, j].resetHP(1);
+                    }
+
+                    if (moleArray[i, j].getColor() == Color.Red)
+                    {
+                        moleArray[i, j].resetHP(2);
+                    }
+
+                    if (moleArray[i, j].getColor() == Color.Coral)
+                    {
+                        moleArray[i, j].resetHP(3);
+                    }
+
+                    if (moleArray[i, j].getColor() == Color.HotPink)
+                    {
+                        moleArray[i, j].resetHP(4);
+                    }
+                    
+                }
+            }
+        }
+        
 
     }
 }

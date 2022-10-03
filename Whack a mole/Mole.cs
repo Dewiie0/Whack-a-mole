@@ -20,8 +20,9 @@ namespace Whack_a_mole
         int posX;
         int posY;
         int velocityY;
-        int moleType;
+        public int moleType;
         public int moleHP;
+        int resetMoleHP;
         bool moveUpActive=false;
         public bool molehit=false;
         public double timer = 0;
@@ -35,16 +36,20 @@ namespace Whack_a_mole
 
         Random random = new Random();
 
-        public Mole(Texture2D moleTex, Texture2D holeTex, Texture2D foreTex,Texture2D KO,int posX,int posY)
+        Color color;
+
+        public Mole(Texture2D moleTex, Texture2D holeTex, Texture2D foreTex,Texture2D KO,int posX,int posY,Color color,int moleHP)
         {
             this.moleTex = moleTex;
             this.holeTex = holeTex;
             this.foreTex = foreTex; 
             this.KO = KO;
+            this.moleHP = moleHP;
             this.posX = posX;
             this.posY = posY;
             this.pos = new Vector2(posX, posY);
             this.molePos = new Vector2(posX, posY);
+            this.color = color;
 
         }
 
@@ -57,9 +62,10 @@ namespace Whack_a_mole
             if (moveUpActive)
             {
                 random = new Random();
-
+                moleHP = resetMoleHP;
                 velocityY = random.Next(-10, -4);
                 velocity = new Vector2(0,velocityY);
+
             }
 
             if (molePos.Y <= posY-160)
@@ -77,14 +83,13 @@ namespace Whack_a_mole
             if (molehit)
             {
                 velocity = new Vector2(0, 3);
+               
             }
 
-            if (molePos.Y >= posY&&velocity==new Vector2(0,3)&&molehit==false)
+            if (molePos.Y >= posY&&velocity==new Vector2(0,3)&& molehit == false)
             {
                 velocity = new Vector2(0, 0);
-                molehit = false;
                 lostLife = true;
-                moleType = random.Next(0, 3);
 
             }
 
@@ -92,60 +97,20 @@ namespace Whack_a_mole
             {
                 velocity = new Vector2(0, 0);
                 molehit = false;
-                moleType = random.Next(0, 3);
 
             }
 
-            if (moleType == 0)
-            {
-                moleHP = 1;
-            }
-
-            if (moleType == 1)
-            {
-                moleHP = 2;
-            }
-
-            if (moleType == 2)
-            {
-                moleHP = 3;
-            }
-
-            if (moleType == 3)
-            {
-                moleHP = 4;
-            }
         }
-
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(holeTex, pos, Color.White);
-
-            if (moleType == 0)
-            {
-                spriteBatch.Draw(moleTex,molePos,Color.White);
-            }
-            if (moleType == 1)
-            {
-                spriteBatch.Draw(moleTex, molePos, Color.Yellow);
-            }
-            if (moleType == 2)
-            {
-                spriteBatch.Draw(moleTex, molePos, Color.Purple);
-            }
-            if(moleType == 3)
-            {
-                spriteBatch.Draw(moleTex,molePos, Color.Blue);
-            }
-
-
+            spriteBatch.Draw(holeTex, pos, Color.White);          
+            spriteBatch.Draw(moleTex,molePos,color);
             if (molehit)
             {
-                spriteBatch.Draw(KO, molePos, Color.White);
+                spriteBatch.Draw(KO, molePos, color);
             }
             spriteBatch.Draw(foreTex, pos, Color.White);
         }
-
         public void moveUpAct(bool moveTheMole)
         {
             moveUpActive = moveTheMole;
@@ -158,5 +123,14 @@ namespace Whack_a_mole
         {
             moleType = getMoleType;
         }
+        public void resetHP(int hp)
+        {
+            resetMoleHP = hp;
+        }
+        public Color getColor()
+        {
+            return color;
+        }
+
     }
 }
