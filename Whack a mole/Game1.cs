@@ -31,6 +31,7 @@ namespace Whack_a_mole
         int posY;
         Vector2 stonePos;
         Vector2 velocity;
+        Vector2 middlePos;
 
         //Arrays
         Mole[,] moleArray;
@@ -108,6 +109,7 @@ namespace Whack_a_mole
 
             stonePos = new Vector2(125, -60);
             velocity = new Vector2(0, 2);
+            middlePos = new Vector2(Window.ClientBounds.Width / 2, Window.ClientBounds.Height / 2);
 
             sheetRect = new Rectangle(0,0, 60, 60);
 
@@ -122,8 +124,8 @@ namespace Whack_a_mole
         }
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            //    Exit();
 
             mState = Mouse.GetState();
             keyboardState = Keyboard.GetState();
@@ -156,6 +158,12 @@ namespace Whack_a_mole
             if (gameState == GameState.gameOver)
             {
                 IsMouseVisible = true;
+                gameoverStateUpdate();
+            }
+
+            if (gameState == GameState.paus)
+            {
+                pausGameUpdate();
             }
             // TODO: Add your update logic here
 
@@ -174,6 +182,10 @@ namespace Whack_a_mole
             {
                 drawPlayState();
 
+            }
+            if (gameState == GameState.paus)
+            {
+                drawPlayState();
             }
             if (gameState == GameState.gameOver)
             {
@@ -198,6 +210,7 @@ namespace Whack_a_mole
             start,
             play,
             gameOver,
+            paus,
         }
 
         //Draw
@@ -236,6 +249,51 @@ namespace Whack_a_mole
             _spriteBatch.DrawString(spriteFont, "Game Over !", new Vector2(240, 400), Color.White);
             _spriteBatch.DrawString(spriteFont, "Yours score was: "+score.ToString(), new Vector2(180, 450), Color.White);
         }
+        public void drawPausState()
+        {
+            _spriteBatch.DrawString(spriteFont, "You have paus the game please press Enter to continue", middlePos, Color.White);
+        }
+        public void drawHeart(int lives)
+        {
+            if (lives == 5)
+            {
+                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(50, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(100, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(150, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(200, 60), Color.White);
+            }
+
+            if (lives == 4)
+            {
+                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(50, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(100, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(150, 60), Color.White);
+            }
+
+            if (lives == 3)
+            {
+                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(50, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(100, 60), Color.White);
+            }
+
+            if (lives == 2)
+            {
+                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
+                _spriteBatch.Draw(heartTex, new Vector2(50, 60), Color.White);
+            }
+
+            if (lives == 1)
+            {
+                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
+            }
+            if (lives == 0)
+            {
+
+            }
+        }
 
         //Update
         public void playStateUpdate(GameTime gameTime)
@@ -243,7 +301,7 @@ namespace Whack_a_mole
             timer += gameTime.ElapsedGameTime.TotalSeconds;
             gameTimer -= gameTime.ElapsedGameTime.TotalSeconds;
             rotationAngle = rotationAngle % circle;
-            IsMouseVisible = true;
+            IsMouseVisible = false;
 
 
             if (timer >= resetTimer)
@@ -313,6 +371,11 @@ namespace Whack_a_mole
                         levelState=LevelState.level3;
                     }
 
+                    if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    {
+                        gameState = GameState.paus;
+                    }
+
 
                     malletRotate(gameTime);
                     resetHP(moleArray);
@@ -355,6 +418,26 @@ namespace Whack_a_mole
                 playText = false;
             }
         }
+        public void gameoverStateUpdate()
+        {
+            if (keyboardState.IsKeyDown(Keys.Enter))
+            {
+                gameState = GameState.play;
+                score = 0;
+                lives = 5;
+                streaks = 0;
+                randomMole();
+            }
+        }
+        public void pausGameUpdate()
+        {
+            if (keyboardState.IsKeyDown(Keys.Enter))
+            {
+                gameState = GameState.play;
+            }
+        }
+
+        //malletUpdate
         public void malletRotate(GameTime gameTime)
         {
 
@@ -366,7 +449,7 @@ namespace Whack_a_mole
 
             if (isRotate == true)
             {
-                rotationAngle += gameTime.ElapsedGameTime.TotalSeconds;
+                rotationAngle += gameTime.ElapsedGameTime.TotalSeconds+0.01;
                 if (rotationAngle >= 1)
                 {
                     isRotateBack = true;
@@ -385,47 +468,8 @@ namespace Whack_a_mole
                 }
             }
         }
-        public void drawHeart(int lives)
-        {
-            if (lives == 5)
-            {
-                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
-                _spriteBatch.Draw(heartTex, new Vector2(50, 60), Color.White);
-                _spriteBatch.Draw(heartTex, new Vector2(100, 60), Color.White);
-                _spriteBatch.Draw(heartTex, new Vector2(150, 60), Color.White);
-                _spriteBatch.Draw(heartTex, new Vector2(200, 60), Color.White);
-            }
 
-            if (lives == 4)
-            {
-                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
-                _spriteBatch.Draw(heartTex, new Vector2(50, 60), Color.White);
-                _spriteBatch.Draw(heartTex, new Vector2(100, 60), Color.White);
-                _spriteBatch.Draw(heartTex, new Vector2(150, 60), Color.White);
-            }
-
-            if (lives == 3)
-            {
-                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
-                _spriteBatch.Draw(heartTex, new Vector2(50, 60), Color.White);
-                _spriteBatch.Draw(heartTex, new Vector2(100, 60), Color.White);
-            }
-
-            if (lives == 2)
-            {
-                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
-                _spriteBatch.Draw(heartTex, new Vector2(50, 60), Color.White);
-            }
-
-            if (lives == 1)
-            {
-                _spriteBatch.Draw(heartTex, new Vector2(0, 60), Color.White);
-            }
-            if (lives == 0)
-            {
-
-            }
-        }
+        //moleUpdate
         public void randomMole()
         {
             for (int i = 0; i < moleArray.GetLength(0); i++)
