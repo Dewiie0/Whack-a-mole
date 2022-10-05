@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 using System;
 
 namespace Whack_a_mole
@@ -19,6 +20,10 @@ namespace Whack_a_mole
         Texture2D spriteSheet;
         Texture2D mallet;
         Texture2D heartTex;
+
+        //Effects
+        SoundEffect hitEffect;
+        SoundEffect downEffect;
 
         //Rect
         Rectangle sheetRect;
@@ -71,7 +76,7 @@ namespace Whack_a_mole
         int moleType;
 
 
-        GameState gameState=GameState.play;
+        GameState gameState=GameState.start;
         LevelState levelState=LevelState.level1;
 
         public Game1()
@@ -106,6 +111,9 @@ namespace Whack_a_mole
             spriteSheet = Content.Load<Texture2D>("spritesheet_stone");
             mallet = Content.Load<Texture2D>("mallet");
             heartTex = Content.Load<Texture2D>("Heart");
+
+            hitEffect = Content.Load<SoundEffect>("HitEffect");
+            downEffect = Content.Load<SoundEffect>("DownEffect");
 
             stonePos = new Vector2(125, -60);
             velocity = new Vector2(0, 2);
@@ -332,12 +340,13 @@ namespace Whack_a_mole
                     {
                         mRelease = false;
                         moleArray[i,j].moleHP--;
-
+                        hitEffect.Play();
                         if (moleArray[i,j].moleHP == 0)
                         {
                             moleArray[i, j].gotHit(true);
                             streaks++;
                             score += 10;
+                            downEffect.Play();
                         }
 
                     }
