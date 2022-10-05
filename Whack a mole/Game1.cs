@@ -15,6 +15,7 @@ namespace Whack_a_mole
         Texture2D holeTex;
         Texture2D foreTex;
         Texture2D backGround;
+        Texture2D menuBackgroud;
         Texture2D moleTex;
         Texture2D moleKOTex;
         Texture2D spriteSheet;
@@ -110,6 +111,7 @@ namespace Whack_a_mole
             spriteSheet = Content.Load<Texture2D>("spritesheet_stone");
             mallet = Content.Load<Texture2D>("mallet");
             heartTex = Content.Load<Texture2D>("Heart");
+            menuBackgroud = Content.Load<Texture2D>("menu");
 
             hitEffect = Content.Load<SoundEffect>("HitEffect");
             downEffect = Content.Load<SoundEffect>("DownEffect");
@@ -234,7 +236,8 @@ namespace Whack_a_mole
 
             if (playText == true)
             {
-                _spriteBatch.DrawString(spriteFont, "Press Enter to play Whack a mole", new Vector2(90, 400), Color.White);
+                _spriteBatch.DrawString(spriteFont, "Press Enter to play Whack a mole", new Vector2(90, 400), Color.Black);
+                _spriteBatch.Draw(menuBackgroud, Vector2.Zero, Color.White);
             }
 
         }
