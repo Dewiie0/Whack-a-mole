@@ -445,8 +445,8 @@ namespace Whack_a_mole
 
 
             if (isRotate == true)
-            {
-                rotationAngle += gameTime.ElapsedGameTime.TotalSeconds+0.01;
+            {              
+                rotationAngle += gameTime.ElapsedGameTime.TotalSeconds;
                 if (rotationAngle >= 1)
                 {
                     isRotateBack = true;
@@ -504,7 +504,6 @@ namespace Whack_a_mole
                 }
             }
         }
-
         public void randomMoleHellMode()
         {
             for (int i = 0; i < moleArray.GetLength(0); i++)
