@@ -145,7 +145,14 @@ namespace Whack_a_mole
             if (gameState == GameState.play)
             {
                 playStateUpdate(gameTime);
-                resetTimer -=gameTime.ElapsedGameTime.TotalSeconds/50;
+ 
+                resetTimer -= gameTime.ElapsedGameTime.TotalSeconds / 50;
+                if(resetTimer <= 0.2)
+                {
+                    resetTimer=0.2;
+                }
+                
+
 
             }
             if (gameState == GameState.gameOver)
