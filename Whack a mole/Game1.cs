@@ -145,7 +145,7 @@ namespace Whack_a_mole
             if (gameState == GameState.play)
             {
                 playStateUpdate(gameTime);
-                resetTimer -=gameTime.ElapsedGameTime.TotalSeconds/40;
+                resetTimer -=gameTime.ElapsedGameTime.TotalSeconds/50;
 
             }
             if (gameState == GameState.gameOver)
@@ -411,6 +411,7 @@ namespace Whack_a_mole
                 lives = 5;
                 streaks = 0;
                 gameTimer = 120;
+                resetTimer = 2;
                 randomMole();
             }
         }
@@ -426,10 +427,10 @@ namespace Whack_a_mole
                 gameState = GameState.play;
                 randomMoleHellMode();
                 score = 0;
-                lives = 5;
+                lives = 3;
                 streaks = 0;
                 gameTimer = 120;
-                resetTimer = 0.75;
+                resetTimer = 1;
             }
         }
 
