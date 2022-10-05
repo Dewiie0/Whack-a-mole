@@ -56,7 +56,7 @@ namespace Whack_a_mole
 
         //timer asset
         double timer = 0;
-        double resetTimer = 1;
+        double resetTimer = 2;
         int frame;
         double frameTimer = 100;
         double frameInterval = 100;
@@ -146,22 +146,9 @@ namespace Whack_a_mole
             if (gameState == GameState.play)
             {
                 playStateUpdate(gameTime);
+                resetTimer -=gameTime.ElapsedGameTime.TotalSeconds/100;
 
-                if (levelState==LevelState.level1)
-                {
-                    resetTimer = 2;
 
-                }
-                if (levelState == LevelState.level2)
-                {
-                    resetTimer = 1;
- 
-                }
-                if (levelState == LevelState.level3)
-                {
-                    resetTimer = 0.5;
-     
-                }
             }
             if (gameState == GameState.gameOver)
             {
@@ -336,7 +323,8 @@ namespace Whack_a_mole
                   
                     moleArray[i, j].Update(gameTime);
 
-                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) && moleArray[i, j].molePos.Y < moleArray[i, j].pos.Y - 60 && moleArray[i,j].molehit==false)
+                    if (mState.LeftButton == ButtonState.Pressed && mRelease == true && moleArray[i, j].moleRect.Contains(mState.X, mState.Y) 
+                        && moleArray[i, j].molePos.Y < moleArray[i, j].pos.Y - 60 && moleArray[i,j].molehit==false)
                     {
                         mRelease = false;
                         moleArray[i,j].moleHP--;
@@ -491,25 +479,25 @@ namespace Whack_a_mole
                     posY = i * 165 + 250;
                     moleType = random.Next(0, 10);
 
-                    if (moleType >= 0&&moleType<=4)
+                    if (moleType >= 0&&moleType<=3)
                     {
                         moleHP = 1;
                         moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY,Color.White,moleHP);
                     }
 
-                    if (moleType >4&&moleType<=6)
+                    if (moleType >3&&moleType<=5)
                     {
                         moleHP = 2;
                         moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY, Color.Red,moleHP);
                     }
 
-                    if (moleType >6&&moleType<=8)
+                    if (moleType >5&&moleType<=7)
                     {
                         moleHP = 3;
                         moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY, Color.Coral,moleHP);
                     }
 
-                    if (moleType >8&&moleType<=10)
+                    if (moleType >7&&moleType<=9)
                     {
                         moleHP = 4;
                         moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY, Color.HotPink,moleHP);
