@@ -77,7 +77,6 @@ namespace Whack_a_mole
 
 
         GameState gameState=GameState.start;
-        LevelState levelState=LevelState.level1;
 
         public Game1()
         {
@@ -146,8 +145,7 @@ namespace Whack_a_mole
             if (gameState == GameState.play)
             {
                 playStateUpdate(gameTime);
-                resetTimer -=gameTime.ElapsedGameTime.TotalSeconds/100;
-
+                resetTimer -=gameTime.ElapsedGameTime.TotalSeconds/40;
 
             }
             if (gameState == GameState.gameOver)
@@ -195,12 +193,6 @@ namespace Whack_a_mole
         }
 
         //enum
-        enum LevelState
-        {
-            level1,
-            level2,
-            level3,
-        }
         enum GameState
         {
             start,
@@ -241,7 +233,7 @@ namespace Whack_a_mole
         }
         public void drawGameoverState()
         {
-            _spriteBatch.Draw(backGround, new Vector2(0, 0), Color.White);
+            GraphicsDevice.Clear(Color.Red);
             _spriteBatch.DrawString(spriteFont, "Game Over !", new Vector2(240, 400), Color.White);
             _spriteBatch.DrawString(spriteFont, "Yours score was: "+score.ToString(), new Vector2(180, 450), Color.White);
         }
@@ -249,6 +241,9 @@ namespace Whack_a_mole
         {
             _spriteBatch.DrawString(spriteFont, "You have paus the game", new Vector2(middlePos.X-180,middlePos.Y-50), Color.White);
             _spriteBatch.DrawString(spriteFont, "Press Enter to continue!", new Vector2(middlePos.X - 170, middlePos.Y - 10), Color.White);
+
+            _spriteBatch.DrawString(spriteFont, "To easy?", new Vector2(middlePos.X - 80, middlePos.Y+60), Color.White);
+            _spriteBatch.DrawString(spriteFont, "Press R to meet the worse nightmare!", new Vector2(middlePos.X - 250, middlePos.Y+100), Color.White);
         }
         public void drawHeart(int lives)
         {
@@ -360,16 +355,6 @@ namespace Whack_a_mole
                         streaks = 0;
                     }
 
-                    if (score>=100&&score<200)
-                    {
-                        levelState = LevelState.level2;
-                    }
-
-                    if (score >=200)
-                    {
-                        levelState=LevelState.level3;
-                    }
-
                     if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                     {
                         gameState = GameState.paus;
@@ -425,6 +410,7 @@ namespace Whack_a_mole
                 score = 0;
                 lives = 5;
                 streaks = 0;
+                gameTimer = 120;
                 randomMole();
             }
         }
@@ -433,6 +419,17 @@ namespace Whack_a_mole
             if (keyboardState.IsKeyDown(Keys.Enter))
             {
                 gameState = GameState.play;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.R))
+            {
+                gameState = GameState.play;
+                randomMoleHellMode();
+                score = 0;
+                lives = 5;
+                streaks = 0;
+                gameTimer = 120;
+                resetTimer = 0.75;
             }
         }
 
@@ -501,6 +498,44 @@ namespace Whack_a_mole
                     {
                         moleHP = 4;
                         moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY, Color.HotPink,moleHP);
+                    }
+
+                }
+            }
+        }
+
+        public void randomMoleHellMode()
+        {
+            for (int i = 0; i < moleArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < moleArray.GetLength(1); j++)
+                {
+                    posX = j * 165 + 65;
+                    posY = i * 165 + 250;
+                    moleType = random.Next(0, 4);
+
+                    if (moleType ==0)
+                    {
+                        moleHP = 1;
+                        moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY, Color.White, moleHP);
+                    }
+
+                    if (moleType ==1)
+                    {
+                        moleHP = 2;
+                        moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY, Color.Red, moleHP);
+                    }
+
+                    if (moleType ==2)
+                    {
+                        moleHP = 3;
+                        moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY, Color.Coral, moleHP);
+                    }
+
+                    if (moleType ==3)
+                    {
+                        moleHP = 4;
+                        moleArray[i, j] = new Mole(moleTex, holeTex, foreTex, moleKOTex, posX, posY, Color.HotPink, moleHP);
                     }
 
                 }

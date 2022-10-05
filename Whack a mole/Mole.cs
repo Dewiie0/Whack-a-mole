@@ -65,7 +65,6 @@ namespace Whack_a_mole
                 moleHP = resetMoleHP;
                 velocityY = random.Next(-10, -4);
                 velocity = new Vector2(0,velocityY);
-
             }
 
             if (molePos.Y <= posY-160)
@@ -82,22 +81,19 @@ namespace Whack_a_mole
 
             if (molehit)
             {
-                velocity = new Vector2(0, 3);
-               
+                velocity = new Vector2(0, 3);           
             }
 
             if (molePos.Y >= posY&&velocity==new Vector2(0,3)&& molehit == false)
             {
                 velocity = new Vector2(0, 0);
                 lostLife = true;
-
             }
 
             if (molePos.Y >= posY && velocity == new Vector2(0, 3) && molehit == true)
             {
                 velocity = new Vector2(0, 0);
                 molehit = false;
-
             }
 
         }
