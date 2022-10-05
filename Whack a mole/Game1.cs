@@ -186,6 +186,7 @@ namespace Whack_a_mole
             if (gameState == GameState.paus)
             {
                 drawPlayState();
+                drawPausState();
             }
             if (gameState == GameState.gameOver)
             {
@@ -251,7 +252,8 @@ namespace Whack_a_mole
         }
         public void drawPausState()
         {
-            _spriteBatch.DrawString(spriteFont, "You have paus the game please press Enter to continue", middlePos, Color.White);
+            _spriteBatch.DrawString(spriteFont, "You have paus the game", new Vector2(middlePos.X-180,middlePos.Y-50), Color.White);
+            _spriteBatch.DrawString(spriteFont, "Press Enter to continue!", new Vector2(middlePos.X - 170, middlePos.Y - 10), Color.White);
         }
         public void drawHeart(int lives)
         {
